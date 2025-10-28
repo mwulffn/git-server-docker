@@ -3,3 +3,6 @@
 *.iml
 out
 gen
+
+# AI files
+.claude

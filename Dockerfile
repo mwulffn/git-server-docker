@@ -1,6 +1,6 @@
-FROM alpine:3.4
+FROM alpine:3.22
 
-MAINTAINER Carlos Bernárdez "carlos@z4studios.com"
+LABEL maintainer="Carlos Bernárdez <carlos@z4studios.com>"
 
 # "--no-cache" is new in Alpine 3.3 and it avoid using
 # "--update + rm -rf /var/cache/apk/*" (to remove cache)
@@ -18,12 +18,11 @@ RUN ssh-keygen -A
 
 WORKDIR /git-server/
 
-# -D flag avoids password generation
-# -s flag changes user's shell
-RUN mkdir /git-server/keys \
-  && adduser -D -s /usr/bin/git-shell git \
-  && echo git:12345 | chpasswd \
-  && mkdir /home/git/.ssh
+# PUID and PGID for configurable user/group IDs (Docker convention)
+ENV PUID=1000 PGID=1000
+
+# Create directories (user creation deferred to start.sh for PUID/PGID support)
+RUN mkdir /git-server/keys
 
 # This is a login shell for SSH accounts to provide restricted Git access.
 # It permits execution only of server-side Git commands implementing the
